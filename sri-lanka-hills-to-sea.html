@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Hills to Sea — a Sri Lanka family journey · Dec 2026</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,300&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* two worlds: highland + ocean */
+      --mist: #1B2A2E;
+      --highland: #24413B;
+      --tea: #3E6B4A;
+      --tea-soft: #9CC49A;
+      --ocean: #062A33;
+      --ocean-2: #0B3E4A;
+      --lagoon: #1E8A8F;
+      --lagoon-soft: #8FD3D3;
+      --laterite: #B5482B;
+      --saffron: #E48A2C;
+      --gold: #E0A63C;
+      --sand: #F1E4C8;
+      --shell: #FFF7EE;
+      --ink: #14211F;
+      --ink-soft: #4B5C5A;
+      --display: 'Fraunces', Georgia, serif;
+      --body: 'Instrument Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+      --page: var(--highland);
+      /* recolored by JS per phase */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      font-family: var(--body);
+      background: var(--shell);
+      color: var(--ink);
+      line-height: 1.5;
+      overflow-x: hidden
+    }
+
+    img {
+      display: block;
+      max-width: 100%
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      color: inherit
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      place-items: end start;
+      background: var(--mist);
+      color: var(--shell);
+      overflow: hidden
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .5;
+      transform: scale(1.06);
+      animation: drift 26s ease-in-out infinite alternate
+    }
+
+    @keyframes drift {
+      to {
+        transform: scale(1) translateY(-2%)
+      }
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(27, 42, 46, .12) 0%, rgba(27, 42, 46, .30) 40%, rgba(6, 42, 51, .94) 100%)
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: clamp(24px, 5vw, 76px);
+      max-width: 1120px
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--tea-soft);
+      font-weight: 600
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-weight: 300;
+      font-size: clamp(44px, 8.5vw, 120px);
+      line-height: .94;
+      letter-spacing: -.02em;
+      margin: 14px 0 18px
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gold)
+    }
+
+    .hero p {
+      max-width: 600px;
+      font-size: clamp(15px, 1.6vw, 19px);
+      color: rgba(255, 247, 238, .84)
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-top: 34px
+    }
+
+    .hero-stats div {
+      border-left: 2px solid var(--gold);
+      padding-left: 12px
+    }
+
+    .hero-stats b {
+      display: block;
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1
+    }
+
+    .hero-stats span {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--tea-soft)
+    }
+
+    .scroll-cue {
+      position: absolute;
+      right: clamp(20px, 5vw, 72px);
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      z-index: 3;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--tea-soft);
+      writing-mode: vertical-rl;
+      animation: bob 2.4s ease-in-out infinite
+    }
+
+    @keyframes bob {
+      50% {
+        transform: translateY(8px)
+      }
+    }
+
+    .credit {
+      position: absolute;
+      right: 12px;
+      bottom: 6px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, .4);
+      z-index: 3
+    }
+
+    /* ---------- SECTIONS ---------- */
+    section {
+      padding: clamp(40px, 7vw, 92px) clamp(18px, 5vw, 72px)
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: clamp(28px, 4.5vw, 52px);
+      letter-spacing: -.02em;
+      line-height: 1.05
+    }
+
+    h2 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--laterite)
+    }
+
+    .lede {
+      font-size: 17px;
+      color: var(--ink-soft);
+      max-width: 640px;
+      margin-top: 12px
+    }
+
+    /* ---------- ARC BAND ---------- */
+    .arc {
+      background: var(--sand)
+    }
+
+    .arc-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 48px;
+      align-items: center
+    }
+
+    .arc-bar {
+      display: flex;
+      height: 104px;
+      border-radius: 18px;
+      overflow: hidden;
+      font-family: var(--display);
+      color: var(--shell);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .15)
+    }
+
+    .arc-bar>div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 20px;
+      font-size: 12px;
+      letter-spacing: .04em;
+      text-transform: uppercase
+    }
+
+    .arc-bar b {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: 0
+    }
+
+    .arc-bar small {
+      font-size: 11px;
+      opacity: .85;
+      text-transform: none;
+      letter-spacing: .02em;
+      margin-top: 3px
+    }
+
+    .arc-bar .h {
+      flex: 2;
+      background: linear-gradient(135deg, var(--highland), var(--tea))
+    }
+
+    .arc-bar .e {
+      flex: 2;
+      background: linear-gradient(135deg, var(--tea), var(--saffron))
+    }
+
+    .arc-bar .c {
+      flex: 4;
+      background: linear-gradient(135deg, var(--lagoon), var(--ocean-2))
+    }
+
+    .quote {
+      font-family: var(--display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(21px, 2.5vw, 30px);
+      line-height: 1.28;
+      color: var(--mist)
+    }
+
+    .quote small {
+      display: block;
+      font-family: var(--body);
+      font-style: normal;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 12px
+    }
+
+    .whatchanged {
+      margin-top: 22px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      background: rgba(0, 0, 0, .04);
+      border-left: 3px solid var(--laterite);
+      padding: 12px 14px;
+      border-radius: 8px
+    }
+
+    /* ---------- JOURNEY ---------- */
+    .journey {
+      background: var(--page);
+      color: var(--shell);
+      padding-left: 0;
+      padding-right: 0;
+      transition: background .8s ease
+    }
+
+    .journey .wrap {
+      max-width: none
+    }
+
+    .journey-head {
+      padding: 0 clamp(18px, 5vw, 72px) 26px
+    }
+
+    .journey-head h2 em {
+      color: var(--gold)
+    }
+
+    .journey-head .lede {
+      color: rgba(255, 247, 238, .72)
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr)
+    }
+
+    #map {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      background: #12312c
+    }
+
+    .leaflet-container {
+      font-family: var(--body);
+      background: #12312c
+    }
+
+    .leaflet-control-attribution {
+      font-size: 9px;
+      background: rgba(6, 42, 51, .72) !important;
+      color: #9bb
+    }
+
+    .leaflet-control-attribution a {
+      color: #cde
+    }
+
+    .leaflet-bar a {
+      background: #12312c;
+      color: #fff;
+      border-color: #2c4a44
+    }
+
+    .leaflet-bar a:hover {
+      background: #1d423b
+    }
+
+    .pin {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--sand);
+      border: 3px solid var(--laterite);
+      color: var(--laterite);
+      font: 700 12px/24px var(--body);
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .4);
+      transition: transform .25s, background .25s
+    }
+
+    .pin.active {
+      background: var(--gold);
+      border-color: var(--shell);
+      color: var(--mist);
+      transform: scale(1.35);
+      z-index: 999
+    }
+
+    .pin.air {
+      background: var(--mist);
+      border-color: var(--lagoon-soft);
+      color: var(--lagoon-soft)
+    }
+
+    .pin.ram {
+      background: var(--saffron);
+      border-color: var(--shell);
+      color: #fff
+    }
+
+    .pin.base {
+      background: var(--shell);
+      border-color: var(--lagoon);
+      color: var(--lagoon);
+      width: 34px;
+      height: 34px;
+      font-size: 15px;
+      line-height: 28px
+    }
+
+    .mover {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 6px rgba(224, 166, 60, .35), 0 0 0 13px rgba(224, 166, 60, .12)
+    }
+
+    .mover.train {
+      border-radius: 5px;
+      background: var(--saffron);
+      box-shadow: 0 0 0 6px rgba(228, 138, 44, .35), 0 0 0 13px rgba(228, 138, 44, .12)
+    }
+
+    .days {
+      padding: 0 clamp(18px, 4vw, 46px) 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px
+    }
+
+    .scrub {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: linear-gradient(180deg, var(--page) 72%, transparent);
+      padding: 20px 0 14px;
+      transition: background .8s ease
+    }
+
+    .scrub-row {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 5px
+    }
+
+    .scrub button {
+      background: transparent;
+      border: 0;
+      color: rgba(255, 247, 238, .5);
+      padding: 8px 0 6px;
+      border-bottom: 2px solid rgba(255, 247, 238, .14);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      transition: .2s;
+      text-align: center
+    }
+
+    .scrub button b {
+      display: block;
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 600;
+      color: inherit;
+      line-height: 1.1
+    }
+
+    .scrub button.on {
+      color: var(--gold);
+      border-bottom-color: var(--gold)
+    }
+
+    .scrub button:hover {
+      color: var(--shell)
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      font-size: 11px;
+      color: rgba(255, 247, 238, .62)
+    }
+
+    .legend i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: middle
+    }
+
+    .legend .l-base {
+      background: var(--shell);
+      border: 2px solid var(--lagoon)
+    }
+
+    .legend .l-ram {
+      background: var(--saffron)
+    }
+
+    .legend .l-air {
+      background: var(--mist);
+      border: 2px solid var(--lagoon-soft)
+    }
+
+    .legend .l-drive {
+      background: var(--gold);
+      border-radius: 2px
+    }
+
+    .legend .l-train {
+      background: var(--saffron);
+      border-radius: 2px
+    }
+
+    .card {
+      background: var(--shell);
+      color: var(--ink);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 28px 56px rgba(0, 0, 0, .4);
+      opacity: 0;
+      transform: translateY(28px);
+      animation: rise .5s cubic-bezier(.2, .8, .2, 1) forwards
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .card-img {
+      position: relative;
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, var(--tea), var(--ocean-2));
+      overflow: hidden
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s ease
+    }
+
+    .card:hover .card-img img {
+      transform: scale(1.05)
+    }
+
+    .card-img .tag {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      background: rgba(20, 33, 31, .82);
+      color: var(--sand);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px)
+    }
+
+    .card-img .date {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      background: rgba(224, 166, 60, .92);
+      color: var(--mist);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 6px 10px;
+      border-radius: 999px
+    }
+
+    .card-img .base {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      right: 16px;
+      color: var(--shell);
+      font-family: var(--display);
+      font-size: clamp(23px, 3vw, 32px);
+      font-weight: 600;
+      line-height: 1.05;
+      text-shadow: 0 3px 18px rgba(0, 0, 0, .65)
+    }
+
+    .card-img .base small {
+      display: block;
+      font-family: var(--body);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      opacity: .92;
+      margin-bottom: 5px
+    }
+
+    .card-body {
+      padding: 20px 22px 24px
+    }
+
+    .drive {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--laterite);
+      font-weight: 600;
+      margin-bottom: 12px
+    }
+
+    .card-body p {
+      color: var(--ink-soft);
+      font-size: 15px
+    }
+
+    .timeline {
+      list-style: none;
+      margin-top: 14px;
+      display: grid;
+      gap: 9px
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 10px;
+      font-size: 14px;
+      align-items: baseline
+    }
+
+    .timeline li span {
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--tea)
+    }
+
+    .timeline li. is-ram span {
+      color: var(--saffron)
+    }
+
+    .rule {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: 11px;
+      background: var(--sand);
+      font-size: 13px;
+      color: var(--mist)
+    }
+
+    .rule b {
+      color: var(--laterite)
+    }
+
+    .foot {
+      font-size: 10px;
+      color: #889;
+      margin-top: 12px
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(228, 138, 44, .14);
+      color: var(--laterite);
+      font-weight: 600;
+      border: 1px solid rgba(228, 138, 44, .3)
+    }
+
+    /* ---------- TRANSPORT CALLOUT ---------- */
+    .transport {
+      background: var(--shell)
+    }
+
+    .tg {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 34px
+    }
+
+    .tcard {
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid #eaddc4;
+      background: linear-gradient(180deg, #fffdf8, #fbf3e4)
+    }
+
+    .tcard h3 {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .tcard .icn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--mist);
+      color: var(--gold);
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+      flex: none
+    }
+
+    .tcard p {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-top: 10px
+    }
+
+    .tcard ul {
+      list-style: none;
+      margin-top: 12px;
+      display: grid;
+      gap: 7px;
+      font-size: 13.5px
+    }
+
+    .tcard li {
+      padding-left: 18px;
+      position: relative
+    }
+
+    .tcard li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--saffron);
+      font-weight: 700
+    }
+
+    .train-note {
+      margin-top: 22px;
+      border-radius: 16px;
+      padding: 20px 22px;
+      background: var(--mist);
+      color: var(--shell)
+    }
+
+    .train-note h3 {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gold)
+    }
+
+    .train-note p {
+      color: rgba(255, 247, 238, .82);
+      font-size: 14px;
+      margin-top: 8px
+    }
+
+    .train-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px
+    }
+
+    .train-steps div {
+      background: rgba(255, 255, 255, .06);
+      border-radius: 12px;
+      padding: 14px
+    }
+
+    .train-steps b {
+      font-family: var(--display);
+      color: var(--gold);
+      font-size: 15px;
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .train-steps span {
+      font-size: 13px;
+      color: rgba(255, 247, 238, .78)
+    }
+
+    /* ---------- STAYS ---------- */
+    .stays {
+      background: var(--sand)
+    }
+
+    .stay-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 34px
+    }
+
+    .stay {
+      background: var(--shell);
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      border-top: 6px solid var(--tea)
+    }
+
+    .stay:nth-child(2) {
+      border-top-color: var(--saffron)
+    }
+
+    .stay:nth-child(3) {
+      border-top-color: var(--lagoon)
+    }
+
+    .stay .n {
+      font-family: var(--display);
+      font-size: 60px;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--sand);
+      position: absolute;
+      right: 16px;
+      top: 8px
+    }
+
+    .stay h3 {
+      font-family: var(--display);
+      font-size: 23px;
+      font-weight: 600
+    }
+
+    .stay .nights {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--laterite);
+      font-weight: 600;
+      margin: 4px 0 14px
+    }
+
+    .stay ul {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      font-size: 14px
+    }
+
+    .stay li::before {
+      content: "◆";
+      font-size: 8px;
+      color: var(--tea);
+      margin-right: 8px;
+      vertical-align: middle
+    }
+
+    .stay:nth-child(2) li::before {
+      color: var(--saffron)
+    }
+
+    .stay:nth-child(3) li::before {
+      color: var(--lagoon)
+    }
+
+    /* ---------- SAFETY ---------- */
+    .safety {
+      background: var(--ocean-2);
+      color: var(--shell)
+    }
+
+    .safety h2 em {
+      color: var(--gold)
+    }
+
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 34px
+    }
+
+    .sbox {
+      background: rgba(255, 255, 255, .05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .sbox h3 {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--lagoon-soft);
+      display: flex;
+      gap: 9px;
+      align-items: center
+    }
+
+    .sbox ul {
+      list-style: none;
+      margin-top: 10px;
+      display: grid;
+      gap: 7px;
+      font-size: 13.5px;
+      color: rgba(255, 247, 238, .82)
+    }
+
+    .sbox li {
+      padding-left: 16px;
+      position: relative
+    }
+
+    .sbox li::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      color: var(--gold)
+    }
+
+    .checklist {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .checklist h3 {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 6px
+    }
+
+    .progress {
+      height: 6px;
+      background: rgba(255, 255, 255, .12);
+      border-radius: 99px;
+      margin: 6px 0 14px;
+      overflow: hidden
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--gold);
+      transition: width .4s
+    }
+
+    .check {
+      list-style: none;
+      display: grid;
+      gap: 8px
+    }
+
+    .check label {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      padding: 11px 13px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .05);
+      cursor: pointer;
+      font-size: 14px;
+      transition: .2s
+    }
+
+    .check input {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--lagoon-soft);
+      flex: none;
+      display: grid;
+      place-items: center
+    }
+
+    .check input:checked {
+      background: var(--gold);
+      border-color: var(--gold)
+    }
+
+    .check input:checked::after {
+      content: "✓";
+      color: var(--mist);
+      font-weight: 800;
+      font-size: 13px
+    }
+
+    .check label:has(input:checked) {
+      opacity: .5;
+      text-decoration: line-through
+    }
+
+    footer {
+      padding: 30px clamp(18px, 5vw, 72px) calc(30px + env(safe-area-inset-bottom, 0px));
+      background: var(--mist);
+      color: rgba(255, 247, 238, .55);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    @media (max-width:980px) {
+      .stage {
+        grid-template-columns: 1fr
+      }
+
+      #map {
+        position: relative;
+        height: 56svh;
+        top: auto
+      }
+
+      .arc-grid,
+      .tg,
+      .safety-grid {
+        grid-template-columns: 1fr;
+        gap: 22px
+      }
+
+      .stay-grid {
+        grid-template-columns: 1fr
+      }
+
+      .train-steps {
+        grid-template-columns: 1fr
+      }
+
+      .scrub button b {
+        font-size: 17px
+      }
+
+      .timeline li {
+        grid-template-columns: 84px 1fr
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <img class="hero-img"
+      src="https://commons.wikimedia.org/wiki/Special:FilePath/Nine%20Arch%20Bridge%20Ella.jpg?width=1900"
+      alt="Nine Arch Bridge viaduct in the Ella highlands" onerror="this.style.display='none'">
+    <div class="hero-inner">
+      <div class="eyebrow">Sri Lanka · 3–11 December 2026 · 6 adults + 2 kids</div>
+      <h1>From the hills<br><em>to the sea.</em></h1>
+      <p>Cold tea-country mornings, the Ramayana's own places, a train through the mountains — then four unhurried days
+        where the coast takes over. Eight nights, three bases, two cars.</p>
+      <div class="hero-stats">
+        <div><b>8</b><span>Nights</span></div>
+        <div><b>3</b><span>Bases</span></div>
+        <div><b>6</b><span>Ramayana sites</span></div>
+        <div><b>0</b><span>Safaris — by choice</span></div>
+      </div>
+    </div>
+    <div class="scroll-cue">The journey ↓</div>
+    <div class="credit">Photo: Wikimedia Commons, CC BY-SA</div>
+  </header>
+
+  <!-- ============ ARC ============ -->
+  <section class="arc">
+    <div class="wrap arc-grid">
+      <div>
+        <div class="eyebrow" style="color:var(--laterite)">The shape of it</div>
+        <h2>One long <em>descent.</em></h2>
+        <p class="lede">The trip runs downhill in every sense — from cold misty highlands, through Ella's gorges, down
+          to warm sand. Legend on the way up, rest on the way down.</p>
+        <div class="arc-bar" style="margin-top:26px"
+          aria-label="Two nights Nuwara Eliya, two nights Ella, four nights coast">
+          <div class="h"><b>Nuwara Eliya</b><small>2 nights · Ramayana + cold</small></div>
+          <div class="e"><b>Ella</b><small>2 nights · train + gorges</small></div>
+          <div class="c"><b>Mirissa</b><small>4 nights · beach + Galle</small></div>
+        </div>
+        <div class="whatchanged"><b>Deliberately skipped:</b> safari, zoo, tea-factory tours — too familiar from home.
+          The hills earn their place on legend, the train, and the cold instead.</div>
+      </div>
+      <div class="quote">"Legend on the way up, rest on the way down. Do fewer things, enjoy each one
+        properly."<small>The one planning rule</small></div>
+    </div>
+  </section>
+
+  <!-- ============ JOURNEY ============ -->
+  <section class="journey" id="journey">
+    <div class="wrap">
+      <div class="journey-head">
+        <div class="eyebrow">The route</div>
+        <h2>Airport → highlands → Ella → <em>the coast</em> → home</h2>
+        <p class="lede">Tap a day. The map re-colours as you descend, the route draws itself, and the day card tells you
+          what's driving, what's legend, and what's rest. Use ← → keys too.</p>
+      </div>
+      <div class="stage">
+        <div id="map" role="region" aria-label="Interactive map of the route"></div>
+        <div class="days">
+          <div class="scrub">
+            <div class="scrub-row" id="scrub"></div>
+            <div class="legend">
+              <span><i class="l-base"></i>Base</span>
+              <span><i class="l-ram"></i>Ramayana site</span>
+              <span><i class="l-drive"></i>Drive</span>
+              <span><i class="l-train"></i>Train</span>
+              <span><i class="l-air"></i>Airport</span>
+            </div>
+          </div>
+          <div id="card"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRANSPORT ============ -->
+  <section class="transport">
+    <div class="wrap">
+      <div class="eyebrow" style="color:var(--laterite)">Getting around</div>
+      <h2>Two cars, airport to airport — <em>Day 3 is still a decision.</em></h2>
+      <div class="tg">
+        <div class="tcard">
+          <h3><span class="icn">🚗</span>Self-drive, 2 cars</h3>
+          <p>6 adults + 2 kids + luggage doesn't fit one van comfortably. Two automatics gives space and flexibility on
+            narrow hill roads.</p>
+          <ul>
+            <li>Book fully-insured + zero-excess (Super CDW) — road conditions make scrapes likely</li>
+            <li>GPS-tracked, 24/7 breakdown line, replacement within 6–12h</li>
+            <li>2 child seats; photograph every panel at pickup</li>
+            <li>Temporary licences for both drivers at the airport counter (LKR ~2,000/month)</li>
+          </ul>
+        </div>
+        <div class="tcard">
+          <h3><span class="icn">⚠️</span>The real risks</h3>
+          <p>Not crime — roads and admin. Every stop on this route is mainstream tourist territory and safe.</p>
+          <ul>
+            <li>No night driving on hill roads — buses overtake blind, elephants at dusk</li>
+            <li>Any accident → file a police report or insurance won't honour</li>
+            <li>Decline gem-shop "tips" and surf-board damage claims; pay deposits by credit card</li>
+            <li>Watch rip currents on the coast — swim where flagged</li>
+          </ul>
+        </div>
+      </div>
+      <div class="train-note">
+        <h3>🚂🚗 Nuwara Eliya → Ella: no rental drivers, so it's us</h3>
+        <p>We're not using rental-company drivers to relocate the cars anymore — that plan's out. Two live options
+          instead, still to be decided as a family.</p>
+        <div class="train-steps">
+          <div><b>Option A · Split</b><span>2 of us drive both cars Nuwara Eliya → Ella (~2h). Everyone else rides
+              the blue train (~4h) and meets the drivers in Ella.</span></div>
+          <div><b>Option B · All drive</b><span>All 8 self-drive both cars Nuwara Eliya → Ella (~2h) together. No
+              train, no split — simplest logistically.</span></div>
+          <div><b>Either way</b><span>Passports, cash and valuables stay with people, not locked in a car.</span>
+          </div>
+        </div>
+        <p style="margin-top:14px;font-size:13px;opacity:.8">If Option A wins, book reserved train seats weeks
+          ahead and agree who's driving early — hill roads are a lot on tired drivers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STAYS ============ -->
+  <section class="stays">
+    <div class="wrap">
+      <div class="eyebrow" style="color:var(--laterite)">Where we sleep</div>
+      <h2>Three bases, <em>only three unpacks.</em></h2>
+      <p class="lede">Nothing booked yet — these are the briefs. The coast villa carries the biggest budget: it's where
+        the most waking hours go.</p>
+      <div class="stay-grid">
+        <article class="stay">
+          <div class="n">01</div>
+          <h3>Nuwara Eliya</h3>
+          <div class="nights">2 nights · 3–4 Dec</div>
+          <ul>
+            <li>Warm, heated rooms — December nights hit single digits</li>
+            <li>Family room configuration for 8</li>
+            <li>Easy reach of Sita Amman / Hakgala / Gregory Lake</li>
+            <li>Parking for two cars</li>
+            <li>Hot water, good breakfast</li>
+          </ul>
+        </article>
+        <article class="stay">
+          <div class="n">02</div>
+          <h3>Ella</h3>
+          <div class="nights">2 nights · 5–6 Dec</div>
+          <ul>
+            <li>Valley / Ella Gap view if possible</li>
+            <li>Walkable to town cafés</li>
+            <li>Cars can be left safely (train day)</li>
+            <li>Cool but milder than Nuwara Eliya</li>
+            <li>Space for 8 to spread out</li>
+          </ul>
+        </article>
+        <article class="stay">
+          <div class="n">03</div>
+          <h3>Mirissa / Weligama</h3>
+          <div class="nights">4 nights · 7–10 Dec</div>
+          <ul>
+            <li>The one to spend most on — most hours here</li>
+            <li>Large private pool, space for 8</li>
+            <li>Central: Galle ~40 min west, Tangalle ~1 h east</li>
+            <li>~10 min to a good swimming beach</li>
+            <li>Kitchen / cook, parking for two cars</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SAFETY / PREP ============ -->
+  <section class="safety">
+    <div class="wrap">
+      <div class="eyebrow">Before we fly</div>
+      <h2>Pack for two climates, <em>tick the list.</em></h2>
+      <div class="safety-grid">
+        <div class="sbox">
+          <h3>🧥 Pack</h3>
+          <ul>
+            <li>Warm layers + light jackets for Nuwara Eliya / Ella evenings</li>
+            <li>Walking shoes for Little Adam's Peak</li>
+            <li>Swim gear, floaties, sun hats, reef-safe sunscreen ×8</li>
+            <li>Motion-sickness remedy for the winding hill roads and the kids</li>
+            <li>Modest cover for temple visits (shoulders/knees)</li>
+          </ul>
+        </div>
+        <div class="sbox">
+          <h3>🛕 Ramayana thread</h3>
+          <ul>
+            <li>Ramboda Hanuman — en route up (optional)</li>
+            <li>Sita Amman Kovil — Seetha Eliya</li>
+            <li>Hakgala / Ashok Vatika — the captivity garden</li>
+            <li>Ravana Falls + Ravana Cave — Ella</li>
+            <li>Rumassala — the Sanjeevani hill, on the coast</li>
+          </ul>
+        </div>
+      </div>
+      <div class="checklist">
+        <h3>Pre-trip checklist</h3>
+        <div class="progress"><i id="bar"></i></div>
+        <ul class="check" id="check">
+          <li><label><input type="checkbox">Confirm outbound ticketed for 3 Dec (return 11 Dec 16:55 set)</label></li>
+          <li><label><input type="checkbox">2 cars — automatic, zero-excess, GPS, 2 child seats, airport→airport</label>
+          </li>
+          <li><label><input type="checkbox">Decide Day 3: split-drive vs everyone-drives</label></li>
+          <li><label><input type="checkbox">If splitting: reserved blue-train seats, Nanu Oya → Ella</label></li>
+          <li><label><input type="checkbox">Nuwara Eliya stay booked (2 nts, heated)</label></li>
+          <li><label><input type="checkbox">Ella stay booked (2 nts)</label></li>
+          <li><label><input type="checkbox">Mirissa/Weligama stay booked (4 nts)</label></li>
+          <li><label><input type="checkbox">Home licences (1yr+ validity) + passports + ETA ×8</label></li>
+          <li><label><input type="checkbox">eSIM / currency plan</label></li>
+          <li><label><input type="checkbox">Warm layers packed for the hills</label></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Sri Lanka · hills to coast · 3–11 Dec 2026 · 6 adults + 2 kids</span>
+    <span>Photos: Wikimedia Commons contributors, CC BY-SA · Map tiles © Esri</span>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    (function () {
+      const IMG = f => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(f) + '?width=1400';
+
+      // ---- Places (real coordinates) ----
+      const P = {
+        cmb: [7.1808, 79.8841], ramboda: [7.0510, 80.6960], nuwaraeliya: [6.9497, 80.7891],
+        nanuoya: [6.9503, 80.7686], gregory: [6.9558, 80.7829], sita: [6.9332, 80.8105], hakgala: [6.8330, 80.8144],
+        ella: [6.8667, 81.0466], littleadam: [6.8720, 81.0570], ninearch: [6.8766, 81.0611], ravana: [6.8408, 81.0544],
+        wellawaya: [6.7333, 81.1000], mirissa: [5.9458, 80.4597], weligama: [5.9747, 80.4297], cth: [5.9414, 80.4653],
+        galle: [6.0264, 80.2170], rumassala: [6.0170, 80.2450], unawatuna: [6.0106, 80.2483], hiriketiya: [5.9605, 80.7003]
+      };
+      const NAMES = {cmb: 'Bandaranaike Airport (CMB)', ramboda: 'Ramboda Hanuman Temple', nuwaraeliya: 'Nuwara Eliya — base', nanuoya: 'Nanu Oya station', gregory: 'Gregory Lake', sita: 'Sita Amman Kovil', hakgala: 'Hakgala / Ashok Vatika', ella: 'Ella — base', littleadam: "Little Adam's Peak", ninearch: 'Nine Arch Bridge', ravana: 'Ravana Falls & Cave', mirissa: 'Mirissa — base', weligama: 'Weligama', cth: 'Coconut Tree Hill', galle: 'Galle Fort', rumassala: 'Rumassala Hill', unawatuna: 'Unawatuna', hiriketiya: 'Hiriketiya'};
+      const KIND = {cmb: 'air', ramboda: 'ram', sita: 'ram', hakgala: 'ram', ravana: 'ram', rumassala: 'ram', nuwaraeliya: 'base', ella: 'base', mirissa: 'base'};
+
+      // ---- Route polylines (approx, following real road corridors) ----
+      const R_CLIMB = [P.cmb, [7.14, 80.05], [7.10, 80.35], [7.29, 80.63], [7.20, 80.68], [7.05, 80.70], P.ramboda, P.nuwaraeliya]; // CMB up via Kandy & Ramboda
+      const R_NE2ELLA = [P.nuwaraeliya, P.nanuoya, [6.90, 80.90], [6.88, 81.00], P.ella]; // train corridor
+      const R_ELLA2COAST = [P.ella, P.ravana, P.wellawaya, [6.40, 81.05], [6.10, 80.95], [5.98, 80.70], [5.96, 80.55], P.mirissa]; // descent to coast
+      const R_HOME = [P.mirissa, [5.99, 80.30], [6.10, 80.10], [6.40, 80.05], [6.75, 79.95], [7.00, 79.90], P.cmb]; // expressway north
+
+      // ---- Days ----
+      const PHASE = {hill: '#24413B', ella: '#2C4636', coast: '#0B3E4A'};
+      const DAYS = [
+        {
+          n: 1, date: 'Thu 3 Dec', label: 'Arrive', phase: 'hill', base: 'Nuwara Eliya', tag: 'Arrival · the climb',
+          title: 'Land, then climb into the clouds.', drive: 'CMB → Nuwara Eliya · ~5 h',
+          img: 'Hill Country Sri Lanka.jpg', cap: 'Sri Lanka hill country',
+          p: 'A long first day: land late morning, licence both drivers, collect two cars, then climb ~5 hours through Kandy and Ramboda into the cold highlands. Likely arriving after dark — no sightseeing target beyond one optional stop.',
+          tl: [['On landing', 'Immigration, luggage, SIM, currency'], ['Airport', 'Temporary licences, collect 2 cars, check seats & insurance'], ['En route', 'Ramboda Hanuman Temple — only if before dark', 1], ['Evening', 'Reach base, warm dinner, early night']],
+          rule: '<b>Getting eight people safely up the mountain is the day.</b> Drive conservatively; no night rush.',
+          pins: ['cmb', 'ramboda', 'nuwaraeliya'], route: ['climb'], mover: 'car', focus: [P.cmb, P.nuwaraeliya]
+        },
+        {
+          n: 2, date: 'Fri 4 Dec', label: 'Sita', phase: 'hill', base: 'Nuwara Eliya', tag: 'Ramayana + highlands',
+          title: 'Sita\'s temple, and a cold-country afternoon.', drive: 'Short local hops only',
+          img: 'Seetha Amman Temple Seetha Eliya.jpg', cap: 'Seetha Amman Temple, Seetha Eliya',
+          p: 'No early alarm. Morning at the Ramayana cluster — the only Sita temple of its kind, and the garden of her captivity next door. Afternoon is easy highland novelty: a lake, pony rides, misty pasture.',
+          tl: [['Morning', 'Sita Amman Kovil — the Hanuman-footprint stream', 1], ['Adjacent', 'Hakgala / Ashok Vatika — garden of Sita\'s captivity', 1], ['Afternoon', 'Gregory Lake — boating, pony rides, space to run'], ['Optional', 'Ambewela "New Zealand" farm — misty pasture'], ['Evening', 'Warm dinner in town']],
+          rule: 'Pace it — <b>one cluster, then rest.</b> The cold tires kids faster than heat.',
+          pins: ['nuwaraeliya', 'sita', 'hakgala', 'gregory'], route: [], mover: 'car', focus: [P.gregory, P.hakgala]
+        },
+        {
+          n: 3, date: 'Sat 5 Dec', label: 'NE → Ella', phase: 'ella', base: 'Ella', tag: 'Undecided: train or drive',
+          title: 'Ride the mountains — or drive them.', drive: 'Split: drive ~2 h + train ~4 h — OR all drive ~2 h',
+          img: 'Nine Arch Bridge Ella.jpg', cap: 'The highland railway near Ella',
+          p: 'No rental-company drivers this time — it\'s on us. Either two of us drive both cars down to Ella (~2h) while everyone else rides the famous Nanu Oya → Ella blue train (~4h), or the whole group skips the train and self-drives together. Still deciding.',
+          tl: [['Option A', 'Split — 2 drivers take both cars to Ella (~2h); everyone else rides the blue train (~4h)'], ['Option B', 'Skip the train — all 8 self-drive Nuwara Eliya → Ella (~2h)'], ['Either way', 'Keep passports, cash and valuables on you, not left in a car'], ['Arrive', 'Settle into Ella, café evening']],
+          rule: '<b>No rental-driver relocation.</b> Decide as a family — split the drive, or skip the train together.',
+          pins: ['nuwaraeliya', 'nanuoya', 'ella'], route: ['ne2ella'], mover: 'car', focus: [P.nuwaraeliya, P.ella]
+        },
+        {
+          n: 4, date: 'Sun 6 Dec', label: 'Ella', phase: 'ella', base: 'Ella', tag: 'The "different" day',
+          title: 'Peak, viaduct, waterfall.', drive: 'Short local hops',
+          img: 'Nine Arches Bridge in Ella.jpg', cap: 'Nine Arch Bridge, Ella',
+          p: 'The stuff that doesn\'t exist back home. Early walk up Little Adam\'s Peak before the heat, the colonial viaduct timed to a train crossing, then the Ravana waterfall and cave on the Wellawaya road.',
+          tl: [['Early', 'Little Adam\'s Peak — easy 45–60 min up, big views'], ['Late morning', 'Nine Arch Bridge — time it to a train crossing'], ['Afternoon', 'Ravana Falls — roadside cascade', 1], ['Optional', 'Ravana Cave — steep 600+ steps; view-only with the 4-yr-old', 1], ['Evening', 'Relaxed Ella']],
+          rule: '<b>Ravana Cave is a real climb.</b> Fine for fit adults, skip or admire from below with the little one.',
+          pins: ['ella', 'littleadam', 'ninearch', 'ravana'], route: [], mover: 'car', focus: [P.littleadam, P.ravana]
+        },
+        {
+          n: 5, date: 'Mon 7 Dec', label: 'Descend', phase: 'coast', base: 'Mirissa / Weligama', tag: 'Hills → coast',
+          title: 'Down out of the mountains to the sea.', drive: 'Ella → Mirissa · ~3–3.5 h',
+          img: 'Weligama Beach in Sri Lanka.jpg', cap: 'Weligama Bay',
+          p: 'The big descent — down through Wellawaya, then the expressway to the warm south coast. Ending the hills in Ella (not Nuwara Eliya) is what keeps this drive short. Arrive early afternoon; first pool, first beach, easy dinner.',
+          tl: [['After breakfast', 'Leave mid-morning, self-drive both cars'], ['En route', 'Catch Ravana Falls if skipped; lunch on the way down'], ['Early PM', 'Reach the coast base, check in'], ['Evening', 'Pool, beach, settle — the trip shifts to rest']],
+          rule: '<b>The last mountain drive.</b> From here it\'s flat roads and sea air.',
+          pins: ['ella', 'wellawaya', 'mirissa'], route: ['ella2coast'], mover: 'car', focus: [P.ella, P.mirissa]
+        },
+        {
+          n: 6, date: 'Tue 8 Dec', label: 'Galle', phase: 'coast', base: 'Mirissa / Weligama', tag: 'Fort + coast Ramayana',
+          title: 'Galle Fort and the Sanjeevani hill.', drive: '~40 min west',
+          img: 'SL Galle Fort asv2020-01 img24.jpg', cap: 'Galle Fort — UNESCO World Heritage',
+          p: 'West along the coast. Wander the UNESCO ramparts, lighthouse and Dutch lanes, then Rumassala — the hill believed to be the Sanjeevani-mountain fragment Hanuman dropped, closing the Ramayana thread by the sea. Beach time at Unawatuna.',
+          tl: [['Late morning', 'Galle Fort — ramparts, lighthouse, cafés'], ['Midday', 'Rumassala Hill — the Sanjeevani fragment; Peace Pagoda', 1], ['Afternoon', 'Unawatuna / Dalawella beach'], ['Evening', 'Sunset + dinner around Galle']],
+          rule: '<b>Wander, don\'t tick off.</b> No guided tour needed.',
+          pins: ['mirissa', 'galle', 'rumassala', 'unawatuna'], route: [], mover: 'car', focus: [P.galle, P.mirissa]
+        },
+        {
+          n: 7, date: 'Wed 9 Dec', label: 'Mirissa', phase: 'coast', base: 'Mirissa / Weligama', tag: 'Beach day',
+          title: 'Mirissa, Coconut Tree Hill, Weligama.', drive: 'On the doorstep',
+          img: 'View from Coconut Tree Hill to Mirissa in March.jpg', cap: 'Coconut Tree Hill, Mirissa',
+          p: 'On your doorstep. A morning on Mirissa\'s sloping beach, the palm-topped headland for a photo, gentle Weligama Bay for a beginner surf taster if anyone\'s keen. Afternoon is pool and quiet.',
+          tl: [['Morning', 'Mirissa Beach — swim, sand, relax'], ['Quick stop', 'Coconut Tree Hill — skip if crowded/tired'], ['Midday', 'Weligama Bay — optional surf taster'], ['Afternoon', 'Pool, nap, quiet'], ['Evening', 'Optional Mirissa sunset + dinner']],
+          rule: '<b>Photograph any surfboard before use</b> — the damage-claim scam is real here.',
+          pins: ['mirissa', 'cth', 'weligama'], route: [], mover: 'car', focus: [P.weligama, P.cth]
+        },
+        {
+          n: 8, date: 'Thu 10 Dec', label: 'Flex', phase: 'coast', base: 'Mirissa / Weligama', tag: 'Flex / east coast',
+          title: 'The decide-at-breakfast day.', drive: 'Optional',
+          img: 'Secret beach - Mirissa Sri Lanka.jpg', cap: 'Secret Beach, Mirissa',
+          p: 'Last full day — keep it loose. Drive east to the Hiriketiya horseshoe cove, or do nothing at all. Whale watching is possible from Mirissa but optional: early, long, seasick-prone with young kids.',
+          tl: [['Option A', 'Hiriketiya / Dikwella — calm cove, lunch (~1 h east)'], ['Option B', 'Pure villa / beach / pool day'], ['Option C', 'Whale watching from Mirissa — early, optional'], ['Evening', 'Easy last dinner on the coast']],
+          rule: '<b>Pick one, not several.</b> Don\'t over-program the last day.',
+          pins: ['mirissa', 'hiriketiya'], route: [], mover: 'car', focus: [P.mirissa, P.hiriketiya]
+        },
+        {
+          n: 9, date: 'Fri 11 Dec', label: 'Home', phase: 'coast', base: '—', tag: 'Departure',
+          title: 'The easy drive home.', drive: 'Mirissa → CMB · ~2.5–3 h · fly 16:55',
+          img: 'Sunset in Mirissa 5 March 2023, Sri Lanka.jpg', cap: 'South coast sunset',
+          p: 'Be at CMB by ~14:00 for the 16:55. The coast makes this an easy expressway run — the whole reason the itinerary ends by the sea and not in the mountains. Leave by ~10:00–10:30 with a conservative buffer.',
+          tl: [['Breakfast', 'Checkout'], ['~10:00', 'Leave — buffer for traffic, fuel, 2-car return'], ['En route', 'Fuel both cars per rental policy'], ['Airport', 'Return cars, inspection, check-in'], ['16:55', 'Fly home']],
+          rule: '<b>Leave on time and it\'s effortless.</b> No sightseeing today.',
+          pins: ['mirissa', 'cmb'], route: ['home'], mover: 'car', focus: [P.mirissa, P.cmb]
+        }
+      ];
+      const ROUTES = {climb: R_CLIMB, ne2ella: R_NE2ELLA, ella2coast: R_ELLA2COAST, home: R_HOME};
+
+      // ---- Map ----
+      const map = L.map('map', {zoomControl: true, scrollWheelZoom: false, attributionControl: true}).setView([6.6, 80.5], 8);
+      // Esri ArcGIS Online basemap — no key or account needed, and permits embedding.
+      // (osm.org's tile servers block app embedding; CARTO's now need a key. Both fail by
+      // serving a "blocked" image with HTTP 200, so tileerror won't catch them.)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong)', maxZoom: 19}).addTo(map);
+
+      // ghost of whole route
+      const ghost = {color: '#F1E4C8', weight: 2.5, opacity: .28, dashArray: '2 9'};
+      [R_CLIMB, R_NE2ELLA, R_ELLA2COAST].forEach(l => L.polyline(l, ghost).addTo(map));
+
+      // pins
+      const pins = {};
+      Object.keys(P).forEach(k => {
+        if (!NAMES[k]) return;
+        const cls = 'pin ' + (KIND[k] || '');
+        const glyph = KIND[k] === 'air' ? '✈' : KIND[k] === 'ram' ? 'ॐ' : KIND[k] === 'base' ? '★' : '●';
+        const m = L.marker(P[k], {icon: L.divIcon({className: '', html: `<div class="${cls}">${glyph}</div>`, iconSize: [30, 30], iconAnchor: [15, 15]})}).addTo(map);
+        m.bindTooltip(NAMES[k], {direction: 'top', offset: [0, -15]});
+        pins[k] = m;
+      });
+      let mover = L.marker(P.cmb, {icon: L.divIcon({className: '', html: '<div class="mover"></div>', iconSize: [20, 20], iconAnchor: [10, 10]}), zIndexOffset: 1000}).addTo(map);
+      let live = [];
+
+      function setMover(train) {mover.setIcon(L.divIcon({className: '', html: `<div class="mover ${train ? 'train' : ''}"></div>`, iconSize: [20, 20], iconAnchor: [10, 10]}));}
+
+      function animate(latlngs, color, train) {
+        const line = L.polyline([], {color, weight: 5, opacity: .95, lineCap: 'round', lineJoin: 'round', dashArray: train ? '10 8' : null}).addTo(map);
+        live.push(line);
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) {line.setLatLngs(latlngs); mover.setLatLng(latlngs[latlngs.length - 1]); return;}
+        const pts = []; for (let i = 0; i < latlngs.length - 1; i++) {const a = latlngs[i], b = latlngs[i + 1]; for (let t = 0; t < 1; t += .04)pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);} pts.push(latlngs[latlngs.length - 1]);
+        let i = 0; const id = setInterval(() => {i += 2; line.setLatLngs(pts.slice(0, i)); mover.setLatLng(pts[Math.min(i, pts.length - 1)]); if (i >= pts.length) clearInterval(id);}, 16);
+        line._anim = id;
+      }
+
+      function show(idx, first) {
+        const d = DAYS[idx];
+        live.forEach(l => {if (l._anim) clearInterval(l._anim); map.removeLayer(l);}); live = [];
+        Object.values(pins).forEach(m => {const el = m.getElement() && m.getElement().querySelector('.pin'); if (el) el.classList.remove('active');});
+        d.pins.forEach(k => {const el = pins[k] && pins[k].getElement() && pins[k].getElement().querySelector('.pin'); if (el) el.classList.add('active');});
+
+        // recolor the whole journey section per phase
+        const col = PHASE[d.phase];
+        document.querySelector('.journey').style.setProperty('--page', col);
+
+        map.flyToBounds(L.latLngBounds(d.focus).pad(0.35), {duration: first ? 0 : 1.2, maxZoom: 11});
+        setMover(d.mover === 'train');
+        if (d.route.length) {setTimeout(() => d.route.forEach(r => animate(ROUTES[r], d.mover === 'train' ? '#E48A2C' : '#E0A63C', d.mover === 'train')), first ? 0 : 600);}
+        else mover.setLatLng(d.focus[d.focus.length - 1]);
+
+        document.querySelectorAll('#scrub button').forEach((b, i) => b.classList.toggle('on', i === idx));
+
+        const ram = d.tl.filter(t => t[2]).length;
+        document.getElementById('card').innerHTML = `
+      <article class="card" key="${d.n}">
+        <div class="card-img">
+          <img src="${IMG(d.img)}" alt="${d.cap}" loading="lazy" onerror="this.remove()">
+          <span class="tag">${d.tag}</span>
+          <span class="date">${d.date}</span>
+          <div class="base"><small>Day ${d.n} · ${d.base}</small>${d.title}</div>
+        </div>
+        <div class="card-body">
+          <div class="drive">🚗 ${d.drive}</div>
+          <p>${d.p}</p>
+          <ul class="timeline">${d.tl.map(t => `<li class="${t[2] ? 'is-ram' : ''}"><span>${t[0]}</span><div>${t[1]}${t[2] ? ' <span style="color:var(--saffron);font-weight:700">॰ Ramayana</span>' : ''}</div></li>`).join('')}</ul>
+          <div class="rule">${d.rule}</div>
+          ${ram ? `<div class="pills"><span class="pill">${ram} Ramayana ${ram > 1 ? 'sites' : 'site'} today</span></div>` : ''}
+          <div class="foot">Photo: ${d.cap} — Wikimedia Commons, CC BY-SA</div>
+        </div>
+      </article>`;
+      }
+
+      const scrub = document.getElementById('scrub');
+      DAYS.forEach((d, i) => {const b = document.createElement('button'); b.innerHTML = `<b>${d.n}</b>${d.label}`; b.setAttribute('aria-label', `Day ${d.n}: ${d.label}, ${d.date}`); b.addEventListener('click', () => show(i)); scrub.appendChild(b);});
+      show(0, true);
+
+      document.addEventListener('keydown', e => {const on = [...document.querySelectorAll('#scrub button')].findIndex(b => b.classList.contains('on')); if (e.key === 'ArrowRight' && on < DAYS.length - 1) show(on + 1); if (e.key === 'ArrowLeft' && on > 0) show(on - 1);});
+
+      // checklist
+      const boxes = [...document.querySelectorAll('#check input')];
+      boxes.forEach(c => c.addEventListener('change', () => {const n = boxes.filter(x => x.checked).length; document.getElementById('bar').style.width = (n / boxes.length * 100) + '%';}));
+    })();
+  </script>
+</body>
+
+</html>
